@@ -1,28 +1,21 @@
 let { suiteConfig } = global;
 
-const { provePresentationConfiguration } = require("../config/Transmute");
 const httpClient = require("../services/httpClient");
 const utilities = require("../services/utilities");
 
-if (
-  suiteConfig.submitPresentationConfiguration &&
-  suiteConfig.provePresentationConfiguration &&
-  suiteConfig.notifyPresentationConfiguration &&
-  suiteConfig.authentication
-) {
-  describe("Submit Presentation API", () => {
+if (suiteConfig.provePresentationConfiguration && suiteConfig.notifyPresentationConfiguration) {
+  describe("Prove Presentation API", () => {
     let verifiablePresentations = suiteConfig.verifiablePresentations;
     let verifiableCredentials = suiteConfig.verifiableCredentials;
 
     const {
       authentication,
-      submitPresentationConfiguration,
-      notifyPresentationConfiguration,
     } = suiteConfig;
-    const { endpoint } = submitPresentationConfiguration;
+    const { provePresentationConfiguration } = suiteConfig;
+    const { notifyPresentationConfiguration } = suiteConfig;
+    console.log(provePresentationConfiguration);
     const { endpoint: proveEndpoint } = provePresentationConfiguration;
     const { endpoint: notifyEndpoint } = notifyPresentationConfiguration;
-
     let domain, challenge, accessToken;
 
     beforeAll(async () => {
@@ -40,23 +33,22 @@ if (
       );
     });
 
-    it("1. the submit presentation should fail if wallet has no record of the challenge", async () => {
-      const body = verifiablePresentations[0];
-      const res = await httpClient.postJson(endpoint, body, {});
-      expect(res.status).toBe(400);
-    });
-
-    it("2. the submit presentation should pass", async () => {
+    it("1. the prove presentation should pass", async () => {
       const notifyBody = {
         query: [{ type: "UniversityDegreeCredential" }],
       };
-      const notifyRes = await httpClient.postJson(notifyEndpoint, notifyBody, {});
+      const notifyRes = await httpClient.postJson(
+        notifyEndpoint,
+        notifyBody,
+        {}
+      );
       expect(notifyRes.status).toBe(200);
       expect(notifyRes.body.query).toBeDefined();
       expect(notifyRes.body.domain).toBeDefined();
       expect(notifyRes.body.challenge).toBeDefined();
       ({ domain, challenge } = notifyRes.body);
-      verifiablePresentations[0].verifiableCredential = verifiableCredentials[0].data;
+      verifiablePresentations[0].verifiableCredential =
+        verifiableCredentials[0].data;
       const proveBody = {
         presentation: verifiablePresentations[0],
         options: {
@@ -73,12 +65,8 @@ if (
       });
       expect(proveRes.status).toBe(201);
       expect(proveRes.body).toBeDefined();
-      expect(proveRes.body.type).toEqual(['VerifiablePresentation']);
+      expect(proveRes.body.type).toEqual(["VerifiablePresentation"]);
       expect(proveRes.body.proof).toBeDefined();
-      const submissionRes = await httpClient.postJson(endpoint, proveRes.body);
-      expect(submissionRes.status).toBe(200);
-      expect(submissionRes.body).toBeDefined();
-      expect(submissionRes.body.verified).toBeTruthy();
     });
   });
 }
