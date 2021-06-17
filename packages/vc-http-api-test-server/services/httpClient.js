@@ -59,7 +59,7 @@ const postJson = async (url, body, requestAuthorization = {}) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
-  }, 1000);
+  }, 3000);
   try {
     const res = await fetch(urlWithParams, {
       headers,
