@@ -5,8 +5,11 @@ const getJson = async (url, requestAuthorization) => {
     Accept: 'application/ld+json',
   };
 
-  if (requestAuthorization && requestAuthorization.type === "oauth2-bearer-token") {
-    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`
+  if (
+    requestAuthorization &&
+    requestAuthorization.type === 'oauth2-bearer-token'
+  ) {
+    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`;
   }
 
   const res = await fetch(url, {
@@ -15,7 +18,7 @@ const getJson = async (url, requestAuthorization) => {
   });
 
   const resBody = await res.json();
-  if(res.status > 300) {
+  if (res.status > 300) {
     console.error('ERROR with GET: ', url);
     console.error(resBody);
   }
@@ -28,8 +31,11 @@ const postJson = async (url, body, requestAuthorization = {}) => {
     'Content-Type': 'application/json',
   };
 
-  if (requestAuthorization && requestAuthorization.type === "oauth2-bearer-token") {
-    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`
+  if (
+    requestAuthorization &&
+    requestAuthorization.type === 'oauth2-bearer-token'
+  ) {
+    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`;
   }
 
   if (requestAuthorization.headers) {
@@ -59,6 +65,6 @@ const postJson = async (url, body, requestAuthorization = {}) => {
 };
 
 module.exports = {
-    postJson,
-    getJson
+  postJson,
+  getJson,
 };

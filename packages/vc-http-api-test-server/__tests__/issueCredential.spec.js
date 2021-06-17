@@ -3,13 +3,20 @@ let { suiteConfig } = global;
 const httpClient = require('../services/httpClient');
 
 if (suiteConfig.issueCredentialConfiguration) {
-  const authorizationOptions = {};
+  let authorizationOptions = {};
+
   beforeAll(async () => {
-    if (suiteConfig.getHeaders) {
-      authorizationOptions.headers = await suiteConfig.getHeaders();
-    }
-    if (suiteConfig.getQueryParams) {
-      authorizationOptions.query = await suiteConfig.getQueryParams();
+    if (suiteConfig.authentication) {
+      const res = await httpClient.postJson(
+        suiteConfig.authentication.endpoint,
+        suiteConfig.authentication.request,
+        {},
+      );
+      const accessToken = res.body.access_token;
+      authorizationOptions = {
+        type: 'oauth2-bearer-token',
+        accessToken,
+      };
     }
   });
 
