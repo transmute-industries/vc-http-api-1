@@ -2,39 +2,11 @@ const fetch = require('node-fetch');
 
 module.exports = {
   name: 'Transmute',
-  getHeaders: async () => {
-    // Get oauth2 access token using client_credentials flow
-    const data = {
-      client_id: process.env.TRANSMUTE_CLIENT_ID,
-      client_secret: process.env.TRANSMUTE_CLIENT_SECRET,
-      audience: process.env.TRANSMUTE_AUDIENCE,
-      grant_type: 'client_credentials',
-    };
-    const oauthResponse = await fetch(
-      `https://${process.env.TRANSMUTE_DOMAIN}/oauth/token`,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      },
-    ).then((res) => res.json());
-    const accessToken = oauthResponse.access_token;
-    return {
-      Authorization: `Bearer ${accessToken}`,
-    };
-  },
-  getQueryParams: async () => {
-    return {
-      role: 'https://staging.platform.transmute.industries/organizations/eaff306f-2591-4d02-a08c-410574e9c861/admin',
-    };
-  },
   issueCredentialConfiguration: [
     {
       id: 'did:key:z6Mknv9euBSQrKXBCsTrr7sYdqMiGbeKgUCWvM5SMxQWgn7w',
       endpoint:
-        'https://staging.platform.transmute.industries/v1/organizations/eaff306f-2591-4d02-a08c-410574e9c861/credentials/issue',
+        'https://staging.platform.transmute.industries/v1/organizations/eaff306f-2591-4d02-a08c-410574e9c861/credentials/issue?role=https://staging.platform.transmute.industries/organizations/eaff306f-2591-4d02-a08c-410574e9c861/admin',
       proofType: 'Ed25519Signature2018',
       options: {
         assertionMethod:
