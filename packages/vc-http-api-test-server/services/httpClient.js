@@ -1,14 +1,15 @@
 const fetch = require('node-fetch');
-const { AbortError } = require('node-fetch');
-const AbortController = require('abort-controller');
 
 const getJson = async (url, requestAuthorization) => {
   let headers = {
     Accept: 'application/ld+json',
   };
 
-  if (requestAuthorization && requestAuthorization.type === "oauth2-bearer-token") {
-    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`
+  if (
+    requestAuthorization &&
+    requestAuthorization.type === 'oauth2-bearer-token'
+  ) {
+    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`;
   }
 
   const res = await fetch(url, {
@@ -17,7 +18,7 @@ const getJson = async (url, requestAuthorization) => {
   });
 
   const resBody = await res.json();
-  if(res.status > 300) {
+  if (res.status > 300) {
     console.error('ERROR with GET: ', url);
     console.error(resBody);
   }
@@ -30,8 +31,11 @@ const postJson = async (url, body, requestAuthorization = {}) => {
     'Content-Type': 'application/json',
   };
 
-  if (requestAuthorization && requestAuthorization.type === "oauth2-bearer-token") {
-    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`
+  if (
+    requestAuthorization &&
+    requestAuthorization.type === 'oauth2-bearer-token'
+  ) {
+    headers.Authorization = `Bearer ${requestAuthorization.accessToken}`;
   }
 
   if (requestAuthorization.headers) {
@@ -50,31 +54,17 @@ const postJson = async (url, body, requestAuthorization = {}) => {
     urlWithParams = `${url}?${params.toString()}`;
   }
 
-  // Abort request if it takes more than 1s
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, 1000);
-  try {
-    const res = await fetch(urlWithParams, {
-      headers,
-      method: 'post',
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-    const resBody = await res.json();
-    return { status: res.status, body: resBody };
-  } catch (error) {
-    if (error && error.type === 'aborted') {
-      return { status: 408 };
-    }
-  } finally {
-    clearTimeout(timeout);
-  }
+  const res = await fetch(urlWithParams, {
+    headers,
+    method: 'post',
+    body: JSON.stringify(body),
+  });
+  const resBody = await res.json();
 
+  return {status: res.status, body: resBody};
 };
 
 module.exports = {
-    postJson,
-    getJson
+  postJson,
+  getJson,
 };
