@@ -13,6 +13,7 @@ module.exports = [
     // require("./SecureKey"),
     // //require("./SICPA"),
     require("./Transmute"),
+    require("./TransmutePrototype"),
     // //require("./TrybeID")
     // require("./mesur.io"),
     // require("./Spherity"),
